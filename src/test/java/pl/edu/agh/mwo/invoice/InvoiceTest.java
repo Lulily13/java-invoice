@@ -7,7 +7,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import pl.edu.agh.mwo.invoice.Invoice;
 import pl.edu.agh.mwo.invoice.product.DairyProduct;
 import pl.edu.agh.mwo.invoice.product.OtherProduct;
 import pl.edu.agh.mwo.invoice.product.Product;
@@ -145,6 +144,23 @@ public class InvoiceTest {
                         "Chedar, 3 szt., 10.00 PLN\n" +
                         "Pinezka, 1000 szt., 0.01 PLN\n" +
                         "Liczba pozycji: 3";
+
+        Assert.assertEquals(expectedOutput, invoice.printInvoice());
+    }
+
+    @Test
+    public void testAddingDuplicateProductIncreasesQuantity() {
+        Product onions = new TaxFreeProduct("Warzywa", new BigDecimal("10"));
+
+        invoice.addProduct(onions, 3);
+        invoice.addProduct(onions, 2);
+
+        Assert.assertThat(invoice.getNetTotal(), Matchers.comparesEqualTo(new BigDecimal("50")));
+
+        String expectedOutput =
+                "Faktura nr " + invoice.getNumber() + "\n" +
+                        "Warzywa, 5 szt., 10.00 PLN\n" +
+                        "Liczba pozycji: 1";
 
         Assert.assertEquals(expectedOutput, invoice.printInvoice());
     }
