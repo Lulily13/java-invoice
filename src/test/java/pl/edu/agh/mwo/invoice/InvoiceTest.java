@@ -80,33 +80,24 @@ public class InvoiceTest {
 
     @Test
     public void testInvoiceHasProperTotalValueForManyProduct() {
-        // price with tax: 200
         invoice.addProduct(new TaxFreeProduct("Maskotki", new BigDecimal("200")));
-        // price with tax: 108
         invoice.addProduct(new DairyProduct("Maslo", new BigDecimal("100")));
-        // price with tax: 12.30
         invoice.addProduct(new OtherProduct("Chipsy", new BigDecimal("10")));
         Assert.assertThat(new BigDecimal("320.30"), Matchers.comparesEqualTo(invoice.getGrossTotal()));
     }
 
     @Test
     public void testInvoiceHasPropoerSubtotalWithQuantityMoreThanOne() {
-        // 2x kubek - price: 10
         invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
-        // 3x kozi serek - price: 30
         invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
-        // 1000x pinezka - price: 10
         invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
         Assert.assertThat(new BigDecimal("50"), Matchers.comparesEqualTo(invoice.getNetTotal()));
     }
 
     @Test
     public void testInvoiceHasPropoerTotalWithQuantityMoreThanOne() {
-        // 2x chleb - price with tax: 10
         invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5")), 2);
-        // 3x chedar - price with tax: 32.40
         invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10")), 3);
-        // 1000x pinezka - price with tax: 12.30
         invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
         Assert.assertThat(new BigDecimal("54.70"), Matchers.comparesEqualTo(invoice.getGrossTotal()));
     }
@@ -140,4 +131,22 @@ public class InvoiceTest {
         Assert.assertEquals(firstNumber + 1, secondNumber);
         Assert.assertEquals(secondNumber + 1, thirdNumber);
     }
+
+    @Test
+    public void testInvoicePrintsCorrectly() {
+        Invoice invoice = new Invoice();
+        invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5.00")), 2);
+        invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10.00")), 3);
+        invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+
+        String expectedOutput =
+                "Faktura nr " + invoice.getNumber() + "\n" +
+                        "Chleb, 2 szt., 5.00 PLN\n" +
+                        "Chedar, 3 szt., 10.00 PLN\n" +
+                        "Pinezka, 1000 szt., 0.01 PLN\n" +
+                        "Liczba pozycji: 3";
+
+        Assert.assertEquals(expectedOutput, invoice.print());
+    }
+
 }
