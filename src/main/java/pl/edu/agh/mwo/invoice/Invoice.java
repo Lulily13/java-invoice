@@ -1,7 +1,8 @@
 package pl.edu.agh.mwo.invoice;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.math.RoundingMode;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import pl.edu.agh.mwo.invoice.product.Product;
@@ -10,7 +11,7 @@ public class Invoice {
     private static int lastUsedNumber = 0;
     private int number;
 
-    private Map<Product, Integer> products = new HashMap<Product, Integer>();
+    private Map<Product, Integer> products = new LinkedHashMap<>();
 
     public Invoice() {
         this.number = ++lastUsedNumber;
@@ -52,4 +53,22 @@ public class Invoice {
         }
         return totalGross;
     }
+
+    public String printInvoice() {
+        StringBuilder output = new StringBuilder();
+        output.append("Faktura nr ").append(this.number).append("\n");
+
+        for (Product product : products.keySet()) {
+            int quantity = products.get(product);
+            String name = product.getName();
+            BigDecimal price = product.getPrice().setScale(2, RoundingMode.HALF_UP);
+            output.append(String.format("%s, %d szt., %s PLN\n", name, quantity, price.toPlainString()));
+        }
+
+        output.append("Liczba pozycji: ").append(products.size());
+
+        return output.toString().trim();
+    }
+
+
 }

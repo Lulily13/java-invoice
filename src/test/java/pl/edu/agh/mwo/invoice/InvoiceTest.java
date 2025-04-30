@@ -146,7 +146,7 @@ public class InvoiceTest {
                         "Pinezka, 1000 szt., 0.01 PLN\n" +
                         "Liczba pozycji: 3";
 
-        Assert.assertEquals(expectedOutput, invoice.print());
+        Assert.assertEquals(expectedOutput, invoice.printInvoice());
     }
 
 }
