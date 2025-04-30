@@ -7,10 +7,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import pl.edu.agh.mwo.invoice.product.DairyProduct;
-import pl.edu.agh.mwo.invoice.product.OtherProduct;
-import pl.edu.agh.mwo.invoice.product.Product;
-import pl.edu.agh.mwo.invoice.product.TaxFreeProduct;
+import pl.edu.agh.mwo.invoice.product.*;
 
 public class InvoiceTest {
     private Invoice invoice;
@@ -63,16 +60,16 @@ public class InvoiceTest {
         invoice.addProduct(new TaxFreeProduct("Owoce", new BigDecimal("200")));
         invoice.addProduct(new DairyProduct("Maslanka", new BigDecimal("100")));
         invoice.addProduct(new OtherProduct("Wino", new BigDecimal("10")));
-        Assert.assertThat(new BigDecimal("310"), Matchers.comparesEqualTo(invoice.getNetTotal()));
+        invoice.addProduct(new BottleOfWine("Château", new BigDecimal("50")));
+        invoice.addProduct(new FuelCanister("Eurosuper 98", new BigDecimal("400"), true));
+        invoice.addProduct(new FuelCanister("Eurosuper 95", new BigDecimal("400"), false));
+        Assert.assertThat(new BigDecimal("1160"), Matchers.comparesEqualTo(invoice.getNetTotal()));
     }
 
     @Test
     public void testInvoiceHasProperTaxValueForManyProduct() {
-        // tax: 0
         invoice.addProduct(new TaxFreeProduct("Pampersy", new BigDecimal("200")));
-        // tax: 8
         invoice.addProduct(new DairyProduct("Kefir", new BigDecimal("100")));
-        // tax: 2.30
         invoice.addProduct(new OtherProduct("Piwko", new BigDecimal("10")));
         Assert.assertThat(new BigDecimal("10.30"), Matchers.comparesEqualTo(invoice.getTaxTotal()));
     }
@@ -86,7 +83,7 @@ public class InvoiceTest {
     }
 
     @Test
-    public void testInvoiceHasPropoerSubtotalWithQuantityMoreThanOne() {
+    public void testInvoiceHasProperSubtotalWithQuantityMoreThanOne() {
         invoice.addProduct(new TaxFreeProduct("Kubek", new BigDecimal("5")), 2);
         invoice.addProduct(new DairyProduct("Kozi Serek", new BigDecimal("10")), 3);
         invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
@@ -94,7 +91,7 @@ public class InvoiceTest {
     }
 
     @Test
-    public void testInvoiceHasPropoerTotalWithQuantityMoreThanOne() {
+    public void testInvoiceHasProperTotalWithQuantityMoreThanOne() {
         invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5")), 2);
         invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10")), 3);
         invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
@@ -137,13 +134,20 @@ public class InvoiceTest {
         invoice.addProduct(new TaxFreeProduct("Chleb", new BigDecimal("5.00")), 2);
         invoice.addProduct(new DairyProduct("Chedar", new BigDecimal("10.00")), 3);
         invoice.addProduct(new OtherProduct("Pinezka", new BigDecimal("0.01")), 1000);
+        invoice.addProduct(new BottleOfWine("Château", new BigDecimal("50")), 2);
+        invoice.addProduct(new FuelCanister("Eurosuper 98", new BigDecimal("400"), true), 1);
+        invoice.addProduct(new FuelCanister("Eurosuper 95", new BigDecimal("400"), false), 1);
+
 
         String expectedOutput =
                 "Faktura nr " + invoice.getNumber() + "\n" +
                         "Chleb, 2 szt., 5.00 PLN\n" +
                         "Chedar, 3 szt., 10.00 PLN\n" +
                         "Pinezka, 1000 szt., 0.01 PLN\n" +
-                        "Liczba pozycji: 3";
+                        "Château, 2 szt., 50.00 PLN\n" +
+                        "Eurosuper 98, 1 szt., 400.00 PLN\n" +
+                        "Eurosuper 95, 1 szt., 400.00 PLN\n" +
+                        "Liczba pozycji: 6";
 
         Assert.assertEquals(expectedOutput, invoice.printInvoice());
     }

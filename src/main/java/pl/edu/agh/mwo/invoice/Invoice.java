@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import pl.edu.agh.mwo.invoice.product.FuelCanister;
 import pl.edu.agh.mwo.invoice.product.Product;
 
 public class Invoice {
@@ -48,7 +49,14 @@ public class Invoice {
     }
 
     public BigDecimal getTaxTotal() {
-        return getGrossTotal().subtract(getNetTotal());
+        BigDecimal totalTax = BigDecimal.ZERO;
+        for (Product product : products.keySet()) {
+            if (product instanceof FuelCanister) {
+                continue;
+            }
+            totalTax = totalTax.add(product.getPriceWithTax().subtract(product.getPrice()));
+        }
+        return totalTax;
     }
 
     public BigDecimal getGrossTotal() {

@@ -54,4 +54,25 @@ public class ProductTest {
     public void testProductWithNegativePrice() {
         new TaxFreeProduct("Mandarynki", new BigDecimal("-1.00"));
     }
+
+    @Test
+    public void testBottleOfWinePriceWithTax() {
+        Product bottleOfWine = new BottleOfWine("Wino", new BigDecimal("50.00"));
+        BigDecimal expectedPriceWithTax = new BigDecimal("50.00").multiply(new BigDecimal("1.23")).add(new BigDecimal("5.56"));
+        Assert.assertThat(bottleOfWine.getPriceWithTax(), Matchers.comparesEqualTo(expectedPriceWithTax));
+    }
+
+    @Test
+    public void testFuelCanisterPriceWithTax() {
+        Product fuelCanister = new FuelCanister("Paliwo", new BigDecimal("120.00"), true);
+        BigDecimal expectedPriceWithTax = new BigDecimal("120.00").multiply(new BigDecimal("1.23")).add(new BigDecimal("5.56"));
+        Assert.assertThat(fuelCanister.getPriceWithTax(), Matchers.comparesEqualTo(expectedPriceWithTax));
+    }
+
+    @Test
+    public void testFuelCanisterPriceWithoutTax() {
+        Product fuelCanister = new FuelCanister("Paliwo", new BigDecimal("120.00"), false);
+        Assert.assertThat(fuelCanister.getTaxPercent(), Matchers.comparesEqualTo(new BigDecimal("0")));
+    }
+
 }
